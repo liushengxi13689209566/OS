@@ -4,8 +4,8 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
-#include<stdlib.h>
 
+#include<stdlib.h>
 /*查看所有守护进程的命令：
 ps -eo ppid,pid,sid,stat,tty,comm  | awk '{ if ($2 == $3 && $5 == "?") {print $0}; }'
 */
@@ -14,13 +14,12 @@ void init_daemon()
 {
     pid_t pid;
     int i = 0;
-
     if ((pid = fork()) == -1) {
         printf("Fork error !\n");
         exit(1);
     }
     if (pid != 0) {
-        exit(0);        // 父进程退出
+        exit(0);        /*父进程退出*/
     }
     /* 子进程部分 */
     setsid();           // 子进程开启新会话，并成为会话首进程和组长进程
@@ -29,10 +28,8 @@ void init_daemon()
     for (; i < getdtablesize(); ++i) {
         close(i);        // 关闭打开的文件描述符
     }
-
-    return;
+    return ;
 }
-
 int main(int argc, char *argv[])
 {
     int fp;
@@ -56,7 +53,7 @@ int main(int argc, char *argv[])
         len = strlen(datetime);
         write(fp, datetime, len); //写入时间
         close(fp); 
-        sleep(60);
+        sleep(5);
     }
     return 0;
 }
