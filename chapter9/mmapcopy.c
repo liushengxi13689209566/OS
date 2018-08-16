@@ -20,7 +20,8 @@ int munmap(void *addr, size_t length);
 #include "public.h"
 void realmmap(int fd, size_t length)
 {
-	char *bufp = mmap(NULL, length, PROT_READ, MAP_PRIVATE | MAP_ANON, fd, 0);
+	char *bufp = mmap(NULL, length, PROT_READ, MAP_PRIVATE | MAP_ANON, fd, 0); 
+	//为什么加上MAP_ANON就不行呐？
 	Write(1, bufp, length);
 	return;
 }
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
 	int fd = Open(argv[1], O_RDONLY, 0);
 	struct stat filestat;
 	stat(argv[1], &filestat);
-	
+
 	realmmap(fd, filestat.st_size);
 
 	Close(fd);
