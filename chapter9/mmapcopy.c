@@ -17,12 +17,12 @@ int munmap(void *addr, size_t length);
 如果是MAP_PRIVATE私有的，写时复制的对象，MAP_SHARED 共享对象
 5.被映射对象的起始地址
 */
-#include"public.h"
+#include "public.h"
 void realmmap(int fd, size_t length)
 {
-	char *bufp = mmap(NULL, length,PROT_WRITE,MAP_PRIVATE|MAP_ANON,fd,0);
-	Write(1,bufp,length);
-	return ;
+	char *bufp = mmap(NULL, length, PROT_READ, MAP_PRIVATE | MAP_ANON, fd, 0);
+	Write(1, bufp, length);
+	return;
 }
 int main(int argc, char *argv[])
 {
@@ -31,10 +31,12 @@ int main(int argc, char *argv[])
 		printf("输入参数错误 \n");
 		return -1;
 	}
-	int fd = Open(argv[1],O_RDONLY, 0);
+	int fd = Open(argv[1], O_RDONLY, 0);
 	struct stat filestat;
 	stat(argv[1], &filestat);
-	realmmap(fd,filestat.st_size);
+	
+	realmmap(fd, filestat.st_size);
 
 	Close(fd);
+	exit(0);
 }
