@@ -9,20 +9,20 @@
 void *mmap(void *addr, size_t length, int prot, int flags, 
 			int fd, off_t offset);
 int munmap(void *addr, size_t length);
-参数说明：
-1.从addr开始进行相应的内存映射
-2.映射长度
-3.新映射的虚拟内存区域的访问权限vm_prot
-4.被映射对象的类型，如果是MAP_ANON，就是一个匿名对象，相应虚拟页面以0填充，
-如果是MAP_PRIVATE私有的，写时复制的对象，MAP_SHARED 共享对象
-5.被映射对象的起始地址
+参数说明： 
+1.从addr开始进行相应的内存映射 
+2.映射长度 
+3.新映射的虚拟内存区域的访问权限 vm_prot  
+4.被映射对象的类型，如果是MAP_ANON，就是一个匿名对象，相应虚拟页面以0填充， 
+如果是MAP_PRIVATE私有的，写时复制的对象，MAP_SHARED 共享对象 
+5.被映射对象的起始地址 
 */
 #include "public.h"
 void realmmap(int fd, size_t length)
 {
-	char *bufp = mmap(NULL, length, PROT_READ, MAP_PRIVATE | MAP_ANON, fd, 0); 
-	//为什么加上MAP_ANON就不行呐？
-	Write(1, bufp, length);
+	char *bufp = mmap(NULL, length-10, PROT_READ, MAP_SHARED, fd, 0);
+	//为什么加上MAP_ANON就不行呐？因为会以二进制 0 去填充该虚拟地址空间
+	Write(1, bufp, length-10);
 	return;
 }
 int main(int argc, char *argv[])
