@@ -10,12 +10,14 @@
 #include <vector>
 #include <algorithm>
 using namespace std;
-void print(list<int> &physical_block)
+
+/*void print(list<int> &physical_block)
 {
 	for (auto tmp : physical_block)
 		cout << tmp << " ";
 	cout << endl;
 }
+
 int main(void)
 {
 	// 規定内存中放置的页面不超过 4 （也就是list不超过 4）
@@ -46,4 +48,7 @@ int main(void)
 		print(physical_block);
 		cout << "********************************" << endl;
 	}
+}*/
+int main(void){
+
 }
