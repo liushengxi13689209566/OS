@@ -51,59 +51,61 @@ using namespace std;
 // 	}
 // }
 #include <functional>
-struct S
+#include <unordered_map>
+
+class Node
 {
-	std::string chars;
+  public:
+	Node(std::string str)
+		: data_(str)
+	{
+	}
+	std::string data_;
 };
 
 namespace std
 {
 template <>
-class hash<S>
+class hash<Node>
 {
   public:
-	int operator()(const S &s) const
+	int operator()(const Node &s) const
 	{
-		return stoi(s.chars);
+		return stoi(s.data_);
 	}
 };
-class Node
-{
-  public:
-	Node(std::string str) : data_(str), hnext_(nullptr) {}
 
-	std::string data_;
-	Node *hnext_;
-};
+} // namespace std
 
 class LruCache
 {
   public:
-	//　cpu简单读取数据
-	bool ReadCache()
+	// cpu 访问数据，需要动态更新缓存
+	bool PutCache(std::string &str)
 	{
-	}
-	// cpu 访问新数据，需要动态更新缓存
-	bool WriteCache(std::string &str)
-	{
-		s_.chars = str;
-		Node tmp(str);
-		double_list_.push_back(tmp);
-		hash_table_[hash_fn_(s_)] = &tmp;
+		Node node(str);
+		int key = hash_fn_(node);
+		auto it = hash_table_.find(key);
+
+		if (it != hash_table_.end())
+		{
+			cout << node.data_ << "数据已经在内存中．．．．" << endl;
+			auto list_iter = it->second;
+		}
+		else
+		{
+		}
 	}
 
   private:
-	S s_;
-	std::hash<S> hash_fn_;
-
+	std::hash<Node> hash_fn_;
 	int capacity_; //cache  capacity,其实就是 list 的容量
 	//注意是：只用了一条 std::list
 	//对于list中只有元素的删除操作会导致指向该元素的迭代器失效，其他元素迭代器不受影响，当删除元素时，将迭代器置为空就行了
-	std::list<Node> double_list_;
-	std::vector<Node *> hash_table_{100};
-};
 
-} // namespace std
+	std::list<Node> double_list_;
+	std::unordered_map<int, std::list<Node>::iterator> hash_table_;
+};
 
 int main(void)
 {
@@ -114,6 +116,6 @@ int main(void)
 	for (auto tt : pages)
 	{
 		// std::cout << "hash(s) = " << hash_fn(s) << "\n";
-		lru.WriteCache(tt);
+		lru.PutCache(tt);
 	}
 }
