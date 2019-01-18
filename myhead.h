@@ -7,43 +7,41 @@
 
 #ifndef _MYHEAD_H
 #define _MYHEAD_H
-template <typename T>
 struct Node
 {
-	Node(T Data)
+	Node(std::string Data)
 	{
 		m_Data = Data;
 		m_pPrev = m_pNext = hnext = NULL;
 	}
-	bool operator==(const Node<T> &node)
+	bool operator==(const Node &node)
 	{
 		return this->m_Data == node.m_Data;
 	}
-	Node<T> *hnext; //散列表中拉链的hnext指针
-	T m_Data;		// 通用类型的数据元素
+	Node *hnext;		//散列表中拉链的hnext指针
+	std::string m_Data; // 通用类型的数据元素
 
-	Node<T> *m_pPrev; // 指向上一个元素的指针
-	Node<T> *m_pNext; // 指向下一个元素的指针
+	Node *m_pPrev; // 指向上一个元素的指针
+	Node *m_pNext; // 指向下一个元素的指针
 };
 
-template <typename T>
 class DoubleList
 {
   private:
-	int m_nCount;	 // 链表中元素的数量
-	Node<T> *m_pHead; // 链表头指针
-	Node<T> *m_pTail; // 链表尾指针
+	int m_nCount;  // 链表中元素的数量
+	Node *m_pHead; // 链表头指针
+	Node *m_pTail; // 链表尾指针
   public:
 	DoubleList() : m_nCount(0), m_pHead(NULL), m_pTail(NULL) {}
 
-	DoubleList(const T &data) : m_nCount(0), m_pHead(NULL), m_pTail(NULL)
+	DoubleList(const std::string &data) : m_nCount(0), m_pHead(NULL), m_pTail(NULL)
 	{
 		push_front(data);
 	}
 
 	virtual ~DoubleList()
 	{
-		Node<T> *temp = m_pHead;
+		Node *temp = m_pHead;
 		while (temp)
 		{
 			delete temp;
@@ -60,9 +58,9 @@ class DoubleList
 	bool empty() const { return (!m_pHead || !m_pTail); }
 
 	//从头部增加
-	Node<T> *push_front(T Data)
+	Node *push_front(Node node)
 	{
-		Node<T> *pNewNode = new Node<T>(Data);
+		Node *pNewNode = &node;
 		if (m_pHead)
 		{
 			m_pHead->m_pPrev = pNewNode;
@@ -82,7 +80,7 @@ class DoubleList
 		if (empty())
 			throw("DoubleList : list is empty");
 
-		Node<T> *temp(m_pTail);
+		Node *temp(m_pTail);
 		m_pTail = m_pTail->m_pPrev;
 
 		if (m_pTail)
@@ -95,13 +93,13 @@ class DoubleList
 		return;
 	}
 	//删除
-	void erase(Node<T> *pos)
+	void erase(Node *pos)
 	{
 		if (pos)
 		{
 			if (pos == m_pHead)
 			{
-				Node<T> *temp = m_pHead;
+				Node *temp = m_pHead;
 				m_pHead = m_pHead->m_pNext;
 				if (m_pHead)
 				{
@@ -121,7 +119,7 @@ class DoubleList
 			}
 			else
 			{
-				Node<T> *temp = pos;
+				Node *temp = pos;
 				pos->m_pPrev->m_pNext = pos->m_pNext;
 				pos->m_pNext->m_pPrev = pos->m_pPrev;
 
@@ -132,7 +130,7 @@ class DoubleList
 			}
 		}
 	}
-	T back()
+	std::string back()
 	{
 		if (empty())
 			throw("CDListT : list is empty");

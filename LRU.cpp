@@ -14,7 +14,7 @@ using namespace std;
 #include <functional>
 #include "myhead.h"
 
-int hash_fn_(const Node<std::string> &node)
+int hash_fn_(const Node &node)
 {
 	return stoi(node.m_Data);
 }
@@ -26,10 +26,10 @@ class LruCache
 
 	bool PutCache(std::string &str)
 	{
-		Node<std::string> node(str);
+		Node node(str);
 		int key = hash_fn_(node);
 
-		Node<std::string> *pos = SerarchCache(key, node);
+		Node *pos = SerarchCache(key, node);
 		if (pos)
 		{
 			cout << node.m_Data << "数据已经在内存中．．．．" << endl;
@@ -51,19 +51,20 @@ class LruCache
 			hash_tables_[key] = &node;
 			++capacity_;
 		}
+		return true;
 	}
 
   private:
-	Node<std::string> *SerarchCache(const int &key, const Node<std::string> &node)
+	Node *SerarchCache(const int &key, const Node &node)
 	{
-		Node<std::string> *p = hash_tables_[key];
+		Node *p = hash_tables_[key];
 		if (!p)
 		{
 			return nullptr;
 		}
 		else
 		{
-			Node<std::string> *temp = p->hnext;
+			Node *temp = p->hnext;
 			while (temp)
 			{
 				if (*temp == node)
@@ -76,8 +77,8 @@ class LruCache
 
 	int capacity_ = 0; //cache  capacity,其实就是 list 的容量
 
-	DoubleList<Node<std::string>> double_list_;
-	std::vector<Node<std::string> *> hash_tables_{100, nullptr};
+	DoubleList double_list_;
+	std::vector<Node *> hash_tables_{100, nullptr};
 };
 
 int main(void)
