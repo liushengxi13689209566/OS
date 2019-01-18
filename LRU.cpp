@@ -80,26 +80,45 @@ class hash<Node>
 class LruCache
 {
   public:
+	LruCache() : capacity_(0) {}
 	// cpu 访问数据，需要动态更新缓存
 	bool PutCache(std::string &str)
 	{
 		Node node(str);
 		int key = hash_fn_(node);
+
 		auto it = hash_table_.find(key);
 
 		if (it != hash_table_.end())
 		{
-			cout << node.data_ << "数据已经在内存中．．．．" << endl;
 			auto list_iter = it->second;
+			cout << node.data_ << "数据已经在内存中．．．．" << endl;
+			double_list_.splice(double_list_.begin(), double_list_, list_iter);
 		}
 		else
 		{
+			cout << node.data_ << "数据未在内存中．．．．" << endl;
+			/*页面满了就得删除并添加*/
+			if (capacity_ >= 4)
+			{
+				int key = hash_fn_(double_list_.back());
+				double_list_.pop_back();
+				hash_table_.erase(key);
+				capacity_--;
+			}
+
+			double_list_.push_front(node);
+			hash_table_.insert({key, double_list_.begin()});
+			capacity_++;
 		}
+		for (auto &tt : double_list_)
+			cout << tt.data_ << "  ";
+		cout << endl;
 	}
 
   private:
 	std::hash<Node> hash_fn_;
-	int capacity_; //cache  capacity,其实就是 list 的容量
+	int capacity_ = 0; //cache  capacity,其实就是 list 的容量
 	//注意是：只用了一条 std::list
 	//对于list中只有元素的删除操作会导致指向该元素的迭代器失效，其他元素迭代器不受影响，当删除元素时，将迭代器置为空就行了
 
