@@ -8,26 +8,31 @@
 #ifndef _MYHEAD_H
 #define _MYHEAD_H
 template <typename T>
-struct NodeT
+struct Node
 {
-	NodeT(T Data)
+	Node(T Data)
 	{
 		m_Data = Data;
-		m_pPrev = m_pNext = NULL;
+		m_pPrev = m_pNext = hnext = NULL;
 	}
-	T m_Data; // 通用类型的数据元素
+	bool operator==(const Node<T> &node)
+	{
+		return this->m_Data == node.m_Data;
+	}
+	Node<T> *hnext; //散列表中拉链的hnext指针
+	T m_Data;		// 通用类型的数据元素
 
-	NodeT<T> *m_pPrev; // 指向上一个元素的指针
-	NodeT<T> *m_pNext; // 指向下一个元素的指针
+	Node<T> *m_pPrev; // 指向上一个元素的指针
+	Node<T> *m_pNext; // 指向下一个元素的指针
 };
 
 template <typename T>
 class DoubleList
 {
   private:
-	int m_nCount;	  // 链表中元素的数量
-	NodeT<T> *m_pHead; // 链表头指针
-	NodeT<T> *m_pTail; // 链表尾指针
+	int m_nCount;	 // 链表中元素的数量
+	Node<T> *m_pHead; // 链表头指针
+	Node<T> *m_pTail; // 链表尾指针
   public:
 	DoubleList() : m_nCount(0), m_pHead(NULL), m_pTail(NULL) {}
 
@@ -38,7 +43,7 @@ class DoubleList
 
 	virtual ~DoubleList()
 	{
-		NodeT<T> *temp = m_pHead;
+		Node<T> *temp = m_pHead;
 		while (temp)
 		{
 			delete temp;
@@ -55,9 +60,9 @@ class DoubleList
 	bool empty() const { return (!m_pHead || !m_pTail); }
 
 	//从头部增加
-	NodeT<T> *push_front(T Data)
+	Node<T> *push_front(T Data)
 	{
-		NodeT<T> *pNewNode = new NodeT<T>(Data);
+		Node<T> *pNewNode = new Node<T>(Data);
 		if (m_pHead)
 		{
 			m_pHead->m_pPrev = pNewNode;
@@ -77,7 +82,7 @@ class DoubleList
 		if (empty())
 			throw("DoubleList : list is empty");
 
-		NodeT<T> *temp(m_pTail);
+		Node<T> *temp(m_pTail);
 		m_pTail = m_pTail->m_pPrev;
 
 		if (m_pTail)
@@ -90,13 +95,13 @@ class DoubleList
 		return;
 	}
 	//删除
-	void erase(NodeT<T> *pos)
+	void erase(Node<T> *pos)
 	{
 		if (pos)
 		{
 			if (pos == m_pHead)
 			{
-				NodeT<T> *temp = m_pHead;
+				Node<T> *temp = m_pHead;
 				m_pHead = m_pHead->m_pNext;
 				if (m_pHead)
 				{
@@ -116,7 +121,7 @@ class DoubleList
 			}
 			else
 			{
-				NodeT<T> *temp = pos;
+				Node<T> *temp = pos;
 				pos->m_pPrev->m_pNext = pos->m_pNext;
 				pos->m_pNext->m_pPrev = pos->m_pPrev;
 
