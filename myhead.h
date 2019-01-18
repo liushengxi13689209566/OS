@@ -7,6 +7,13 @@
 
 #ifndef _MYHEAD_H
 #define _MYHEAD_H
+#include <iostream>
+#include <list>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <functional>
+using namespace std;
 struct Node
 {
 	Node(std::string Data)
@@ -61,6 +68,8 @@ class DoubleList
 	Node *push_front(Node node)
 	{
 		Node *pNewNode = &node;
+		node.m_pPrev = node.m_pNext = NULL;
+
 		if (m_pHead)
 		{
 			m_pHead->m_pPrev = pNewNode;
@@ -135,6 +144,16 @@ class DoubleList
 		if (empty())
 			throw("CDListT : list is empty");
 		return m_pTail->m_Data;
+	}
+	void print()
+	{
+		auto temp = m_pHead;
+		while (temp)
+		{
+			cout << temp->m_Data << endl;
+			temp = temp->m_pNext;
+		}
+		cout << endl;
 	}
 };
 #endif

@@ -5,13 +5,6 @@
 	> Created Time: 2018年10月11日 星期四 21时22分41秒
  ************************************************************************/
 
-#include <iostream>
-#include <list>
-#include <vector>
-#include <algorithm>
-#include <string>
-using namespace std;
-#include <functional>
 #include "myhead.h"
 
 int hash_fn_(const Node &node)
@@ -24,7 +17,7 @@ class LruCache
   public:
 	LruCache() : capacity_(0) {}
 
-	bool PutCache(std::string &str)
+	void PutCache(std::string &str)
 	{
 		Node node(str);
 		int key = hash_fn_(node);
@@ -51,7 +44,7 @@ class LruCache
 			hash_tables_[key] = &node;
 			++capacity_;
 		}
-		return true;
+		double_list_.print();
 	}
 
   private:
