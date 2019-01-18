@@ -56,11 +56,14 @@ using namespace std;
 class Node
 {
   public:
-	Node(std::string str)
-		: data_(str)
+	Node() {}
+	Node(std::string str) : data_(str) {}
+	bool operator==(const Node &node)
 	{
+		return this->data_ == node.data_;
 	}
 	std::string data_;
+	Node *hnext; //散列表中拉链的hnext指针
 };
 
 namespace std
@@ -77,23 +80,24 @@ class hash<Node>
 
 } // namespace std
 
+#include "myhead.h"
 class LruCache
 {
   public:
 	LruCache() : capacity_(0) {}
-	// cpu 访问数据，需要动态更新缓存
+
 	bool PutCache(std::string &str)
 	{
 		Node node(str);
 		int key = hash_fn_(node);
 
-		auto it = hash_table_.find(key);
-
-		if (it != hash_table_.end())
+		Node *pos = SerarchCache(key, node);
+		if (pos)
 		{
-			auto list_iter = it->second;
 			cout << node.data_ << "数据已经在内存中．．．．" << endl;
-			double_list_.splice(double_list_.begin(), double_list_, list_iter);
+			double_list_.erase(pos);
+			double_list_.push_front(node);
+			hash_tables_[key] = &node;
 		}
 		else
 		{
@@ -101,29 +105,41 @@ class LruCache
 			/*页面满了就得删除并添加*/
 			if (capacity_ >= 4)
 			{
-				int key = hash_fn_(double_list_.back());
+				hash_tables_[hash_fn_(double_list_.back())] = nullptr;
 				double_list_.pop_back();
-				hash_table_.erase(key);
-				capacity_--;
+				--capacity_;
 			}
-
 			double_list_.push_front(node);
-			hash_table_.insert({key, double_list_.begin()});
-			capacity_++;
+			hash_tables_[key] = &node;
+			++capacity_;
 		}
-		for (auto &tt : double_list_)
-			cout << tt.data_ << "  ";
-		cout << endl;
 	}
 
   private:
+	Node *SerarchCache(const int &key, const Node &node)
+	{
+		Node *p = hash_tables_[key];
+		if (!p)
+		{
+			return nullptr;
+		}
+		else
+		{
+			Node *temp = p->hnext;
+			while (temp)
+			{
+				if (*temp == node)
+					return temp;
+				temp = temp->hnext;
+			}
+			return nullptr;
+		}
+	}
 	std::hash<Node> hash_fn_;
 	int capacity_ = 0; //cache  capacity,其实就是 list 的容量
-	//注意是：只用了一条 std::list
-	//对于list中只有元素的删除操作会导致指向该元素的迭代器失效，其他元素迭代器不受影响，当删除元素时，将迭代器置为空就行了
 
-	std::list<Node> double_list_;
-	std::unordered_map<int, std::list<Node>::iterator> hash_table_;
+	DoubleList<Node> double_list_;
+	std::vector<NodeT<Node> *> hash_tables_{100, nullptr};
 };
 
 int main(void)
@@ -134,7 +150,6 @@ int main(void)
 	LruCache lru;
 	for (auto tt : pages)
 	{
-		// std::cout << "hash(s) = " << hash_fn(s) << "\n";
 		lru.PutCache(tt);
 	}
 }
